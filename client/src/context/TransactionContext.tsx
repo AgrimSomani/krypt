@@ -37,7 +37,7 @@ export const TransactionContext = React.createContext<TransactionContextType>({
     keyword: "",
     message: "",
   },
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>, name: string) => {},
+  handleChange: () => {},
   sendTransaction: async () => {},
   transactions: [],
 });
@@ -108,7 +108,7 @@ export const TransactionProvider: React.FC<TransactionProviderItemsProp> = ({
       const { transactionContract, signer } = await getEthereumContract();
       const parsedAmount = ethers.parseEther(amount);
 
-      const tx = await signer.sendTransaction({
+      await signer.sendTransaction({
         to: addressTo,
         value: parsedAmount,
       });
@@ -135,7 +135,7 @@ export const TransactionProvider: React.FC<TransactionProviderItemsProp> = ({
     try {
       const { transactionContract } = await getEthereumContract();
       const transactions: [] = await transactionContract.getAllTransactions();
-      const structuredTransactions = transactions.map((transaction, item) => ({
+      const structuredTransactions = transactions.map((transaction, _) => ({
         addressTo: transaction[0],
         addressFrom: transaction[1],
         timestamp: new Date(Number(transaction[2]) * 1000).toLocaleString(),

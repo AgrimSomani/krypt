@@ -78,7 +78,7 @@ const Welcome = () => {
           {!currentAccount && (
             <button
               type="button"
-              // onClick={}
+              onClick={connectWallet}
               className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd] w-full"
             >
               <AiFillPlayCircle className="text-white mr-2" />
