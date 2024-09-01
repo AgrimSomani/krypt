@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { ChangeEvent, useState, useContext } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
 import Loader from "./Loader";
+import { TransactionContext } from "../context/TransactionContext";
 
 interface InputItemProps {
   placeHolder: string;
@@ -35,11 +36,32 @@ const Input: React.FC<InputItemProps> = ({
 
 const Welcome = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    connectWallet,
+    currentAccount,
+    sendTransaction,
+    formData,
+    handleChange,
+  } = useContext(TransactionContext);
 
-  const connectWallet = () => {};
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const { addressTo, amount, keyword, message } = formData;
 
-  const handleSubmit = () => {
+    if (!addressTo || !amount || !keyword || !message) {
+      return;
+    }
+
+    e.preventDefault();
     setIsLoading(true);
+    try {
+      await sendTransaction();
+    } catch (error) {
+      alert("Couldnt sent transaction, please try again later");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,14 +75,18 @@ const Welcome = () => {
             Explore the crypto world. Buy and sell cryptocurrencies easily on
             Krypto.
           </p>
-          <button
-            type="button"
-            // onClick={}
-            className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd] w-full"
-          >
-            <AiFillPlayCircle className="text-white mr-2" />
-            <p className="text-white text-base font-semibold">Connect Wallet</p>
-          </button>
+          {!currentAccount && (
+            <button
+              type="button"
+              // onClick={}
+              className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd] w-full"
+            >
+              <AiFillPlayCircle className="text-white mr-2" />
+              <p className="text-white text-base font-semibold">
+                Connect Wallet
+              </p>
+            </button>
+          )}
           <div className="grid sm:grid-cols-3 grid-cols-2 w-full mt-10">
             <div className={`rounded-tl-2xl ${companyCommonStyles}`}>
               Reliability
@@ -89,7 +115,11 @@ const Welcome = () => {
                 <BsInfoCircle size={17} color="#fff" />
               </div>
               <div>
-                <p className="text-white font-light text-sm">Address</p>
+                <p className="text-white font-light text-sm">
+                  {`${currentAccount.slice(0, 5)}...${currentAccount.slice(
+                    currentAccount.length - 4
+                  )}`}
+                </p>
                 <p className="text-white font-semibold text-lg mt-1">
                   Ethereum
                 </p>
@@ -101,31 +131,36 @@ const Welcome = () => {
               placeHolder="Address To"
               name="addressTo"
               type="text"
-              handleChange={connectWallet}
+              handleChange={handleChange}
             />
             <Input
               placeHolder="Amount (ETH)"
               name="amount"
               type="number"
-              handleChange={connectWallet}
+              handleChange={handleChange}
             />
             <Input
               placeHolder="Keyword (Gif)"
               name="keyword"
               type="text"
-              handleChange={connectWallet}
+              handleChange={handleChange}
             />
             <Input
               placeHolder="Enter Message"
               name="message"
               type="text"
-              handleChange={connectWallet}
+              handleChange={handleChange}
             />
 
             <div className="h-[1px] w-full bg-gray-400 my-2" />
 
             {isLoading ? (
-              <Loader />
+              <>
+                <Loader />
+                <p className="text-white w-full mt-2 text-center">
+                  Executing your transaction....
+                </p>
+              </>
             ) : (
               <button
                 type="button"
