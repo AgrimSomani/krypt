@@ -138,7 +138,7 @@ export const TransactionProvider: React.FC<TransactionProviderItemsProp> = ({
       const structuredTransactions = transactions.map((transaction, _) => ({
         addressTo: transaction[0],
         addressFrom: transaction[1],
-        timestamp: new Date(Number(transaction[2]) * 1000).toLocaleString(),
+        timestamp: new Date(Number(transaction[4]) * 1000).toLocaleString(),
         message: transaction[3],
         keyword: transaction[5],
         amount: Number(transaction[2]) / 10 ** 18,
